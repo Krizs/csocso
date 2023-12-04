@@ -16,4 +16,13 @@ class EditChampionship extends EditRecord
             Actions\DeleteAction::make(),
         ];
     }
+
+    protected function getFooterWidgets(): array
+    {
+        return [
+            ChampionshipResource\Widgets\Contests::class,
+            ChampionshipResource\Widgets\ScoreBoard::class,
+            ChampionshipResource\Widgets\nullScoreBoard::class,
+        ];
+    }
 }

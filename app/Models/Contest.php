@@ -8,15 +8,29 @@ use Illuminate\Database\Eloquent\Model;
 class Contest extends Model
 {
 
-    protected $table = 'matches'; // needed cuz The name "Match" is reserved by PHP.
 
     protected $fillable = [
         'championship_id',
         'team_a_id',
         'team_b_id',
-        'winner_id'
+        'winner_id',
+        'team_a_score',
+        'team_b_score',
+        'played_at'
 
     ];
+
+    protected $casts = [
+        'played_at' => 'datetime',
+    ];
+    public static function scores()
+    {
+        for ($i=0; $i <= 10; $i++) { 
+            $scores[$i] = $i;
+        }
+
+        return $scores;
+    }
 
     public function championship()
     {

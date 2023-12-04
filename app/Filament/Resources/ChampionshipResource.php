@@ -17,7 +17,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\ChampionshipResource\Pages;
 use App\Models\Team;
 use Filament\Forms\Components\Select;
-use Filament\Resources\RelationManagers\RelationManager;
+
 
 class ChampionshipResource extends Resource
 {
@@ -43,6 +43,7 @@ class ChampionshipResource extends Resource
                 ->minDate(Carbon::now()->format('Y-m-d H:i'))
                 ->label('Verseny Kezdete'),
                 Select::make('teams')
+                ->disabledOn('edit') 
                 ->required()
                 ->minItems(2)
                 ->relationship('teams','name')
@@ -82,6 +83,7 @@ class ChampionshipResource extends Resource
     public static function getRelations(): array
     {
         return [
+          
         ];
     }
 

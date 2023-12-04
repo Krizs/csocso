@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('matches', function (Blueprint $table) {
+        Schema::create('contests', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('championship_id');
             $table->unsignedBigInteger('team_a_id');
@@ -31,6 +31,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('matches');
+        Schema::dropIfExists('contests');
     }
 };

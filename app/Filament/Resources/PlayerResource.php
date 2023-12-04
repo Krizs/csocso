@@ -22,6 +22,8 @@ class PlayerResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-user';
 
+    protected static ?int $navigationSort = 4;
+
     public static function form(Form $form): Form
     {
         return $form
@@ -47,6 +49,14 @@ class PlayerResource extends Resource
                 TextColumn::make('name')
                 ->label('Játékos név'),
                 TextColumn::make('position')
+                ->formatStateUsing(function($state){
+                    if($state === "attacker")
+                    {
+                        return "Csatár";
+                    }else {
+                        return "Kapus";
+                    }
+                })
                 ->label('Játékos Poziciója'),
                 
             ])
