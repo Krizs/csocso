@@ -29,15 +29,15 @@ class PlayerResource extends Resource
         return $form
             ->schema([
                 TextInput::make('name')
-                ->required()
-                ->unique(ignorable: fn ($record) => $record)
-                ->label('Játékos neve'),
+                    ->required()
+                    ->unique(ignorable: fn ($record) => $record)
+                    ->label('Játékos neve'),
                 Select::make('position')
-                ->options([
-                    'attacker' => 'Csatár',
-                    'goalkeeper' => 'Kapus'
-                ])
-                ->required()
+                    ->options([
+                        'attacker' => 'Csatár',
+                        'goalkeeper' => 'Kapus'
+                    ])
+                    ->required()
 
             ]);
     }
@@ -47,17 +47,17 @@ class PlayerResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('name')
-                ->label('Játékos név'),
+                    ->label('Játékos név'),
                 TextColumn::make('position')
-                ->formatStateUsing(function($state){
-                    if($state === "attacker")
-                    {
-                        return "Csatár";
-                    }else {
-                        return "Kapus";
-                    }
-                })
-                ->label('Játékos Poziciója'),
+                    ->formatStateUsing(function($state){
+                        if($state === "attacker")
+                        {
+                            return "Csatár";
+                        }else {
+                            return "Kapus";
+                        }
+                    })
+                    ->label('Játékos Poziciója'),
                 
             ])
             ->filters([

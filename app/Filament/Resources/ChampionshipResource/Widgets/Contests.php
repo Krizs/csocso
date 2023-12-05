@@ -20,27 +20,25 @@ class Contests extends BaseWidget
     public function table(Table $table): Table
     {
         return $table
-            ->query(
-              fn () => Contest::whereHas('championship', function($query){
-                    $query->where('championship_id',$this->record->id);
-              })
-            )
+            ->query(fn () => Contest::whereHas('championship', function($query){
+                        $query->where('championship_id',$this->record->id);
+                }))
             ->columns([
                 TextColumn::make('teamA.name')
-                ->searchable()
-                ->label('A csapat neve'),
+                    ->searchable()
+                    ->label('A csapat neve'),
                 TextColumn::make('teamB.name')
-                ->searchable()
-                ->label('B csapat neve'),
+                    ->searchable()
+                    ->label('B csapat neve'),
                 TextColumn::make('winner.name')
-                ->label('Győztes csapat neve'),
+                    ->label('Győztes csapat neve'),
                 TextColumn::make('team_a_score')
-                ->label('A csapat pontja'),
+                    ->label('A csapat pontja'),
                 TextColumn::make('team_b_score')
-                ->label('B csapat pontja'),
+                    ->label('B csapat pontja'),
                 TextColumn::make('played_at')
-                ->dateTime('Y-m-d H:i')
-                ->label('Játszva ekkor')
+                    ->dateTime('Y-m-d H:i')
+                    ->label('Játszva ekkor')
             ])
             ->actions([
                 Action::make('edit')

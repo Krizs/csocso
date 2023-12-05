@@ -15,8 +15,8 @@ return new class extends Migration
             $table->unsignedBigInteger('goalkeeper_id')->nullable();
             $table->unsignedBigInteger('attacker_id')->nullable();
 
-            $table->foreign('goalkeeper_id')->references('id')->on('players')->onDelete('set null');
-            $table->foreign('attacker_id')->references('id')->on('players')->onDelete('set null');
+            $table->foreign('goalkeeper_id')->references('id')->on('players')->onDelete('cascade');
+            $table->foreign('attacker_id')->references('id')->on('players')->onDelete('cascade');
         });
     }
 

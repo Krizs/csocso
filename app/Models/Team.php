@@ -50,18 +50,14 @@ class Team extends Model
             $wins[$team->name] = $teamWins;
         }
 
-        //TODO: add point if equal wins
-        
         arsort($wins);
 
-        // if (count(array_unique($wins)) !== 1) {
-        //     $winsCopy = $wins;
-        //     $lastTwoScores = array_slice($winsCopy, -2);
-        //     dd($lastTwoScores);
-        //     if ($lastTwoScores[0] === $lastTwoScores[1]) {
-                
-        //     }
-        // }
+        $winner = Self::checkEquality($contests,$wins);
+       
+        if ($winner != null) {
+                $wins[$winner->name] += 1;
+                arsort($wins);
+        }
 
         $string = '';
         foreach ($wins as $key => $value) {
@@ -72,6 +68,34 @@ class Team extends Model
         return $string;
     }
 
+    protected static function checkEquality($contests,$wins) {
+
+        if ($contests->where('winner_id','!=',null)->count() === $contests->count()) {
+            if (count(array_unique($wins)) !== 1) {
+
+                $lastTwoScores = array_slice($wins,0,2);
+                $firstValue = reset($lastTwoScores);
+                $lastValue = end($lastTwoScores); 
+
+                if ($firstValue === $lastValue) {
+                    $teams = Team::whereIn('name',array_keys($lastTwoScores))->get();
+                    foreach ($teams as $team) {
+                        $teamIds[] = $team->id;
+                    }
+                   
+                    $fightEachOther = $contests->where('team_a_id', $teamIds[0])->where('team_b_id',$teamIds[1]);
+
+                    if ($fightEachOther->count() == 0) {
+                        $fightEachOther = $contests->where('team_a_id', $teamIds[1])->where('team_b_id',$teamIds[0]);
+                    } 
+
+                   $winner = $teams->where('id',$fightEachOther->first()->winner_id)->first();
+                   return $winner;
+                }
+            }
+        }
+    }
+
     public static function getNullScoreBoard($championshipId)
     {
         $teams = Team::whereHas('championships', function ($query) use ($championshipId) {
@@ -79,7 +103,9 @@ class Team extends Model
         })->get();
         
         $contests = Contest::where('championship_id',$championshipId)->get();
+
         $zeroScores = [];
+
         foreach ($teams as $team) {
             $teamContests = $contests->filter(function ($contest) use ($team) {
                 return $contest->team_a_id === $team->id || $contest->team_b_id === $team->id;
@@ -91,13 +117,14 @@ class Team extends Model
             })->count();
     
         }
+
         arsort($zeroScores);
      
         $string = '';
+
         foreach ($zeroScores as $key => $value) {
             $string .= $key . ' : ' . $value . "X, \r\n";
         }
-    
 
         return $string;
     }

@@ -22,7 +22,6 @@ class EditChampionship extends EditRecord
         return [
             ChampionshipResource\Widgets\Contests::class,
             ChampionshipResource\Widgets\ScoreBoard::class,
-            ChampionshipResource\Widgets\nullScoreBoard::class,
         ];
     }
 }

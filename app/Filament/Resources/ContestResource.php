@@ -26,6 +26,7 @@ use Filament\Forms\Components\DateTimePicker;
 use App\Filament\Resources\ContestResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\ContestResource\RelationManagers;
+use Filament\Notifications\Notification;
 
 class ContestResource extends Resource
 {
@@ -40,76 +41,99 @@ class ContestResource extends Resource
                 Section::make('Meccs résztvevők')
                 ->schema([
                     Select::make('championship_id')
-                    ->relationship('championship','name')
-                    ->label('Bajnokság neve')
-                    ->disabled(),
+                        ->relationship('championship','name')
+                        ->label('Bajnokság neve')
+                        ->disabled(),
                     Select::make('team_a_id')
-                    ->relationship('teamA','name')
-                    ->label('A Csapat')
-                    ->disabled(),
+                        ->relationship('teamA','name')
+                        ->label('A Csapat')
+                        ->disabled(),
                     Select::make('team_b_id')
-                    ->relationship('teamB','name')
-                    ->label('B Csapat')
-                    ->disabled(),   
+                        ->relationship('teamB','name')
+                        ->label('B Csapat')
+                        ->disabled(),   
                 ]),
                 Section::make('Meccs eredmények')
                 ->schema([
                     Select::make('winner_id')
-                    ->relationship('winner','name')
-                    ->options(function(Get $get){
-                        $teamAId = $get('team_a_id');
-                        $teamBId = $get ('team_b_id');
-                        
+                        ->required()
+                        ->relationship('winner','name')
+                        ->options(function(Get $get, Set $set){
+                            $teamAId = $get('team_a_id');
+                            $teamBId = $get ('team_b_id');
+                            $winnerId = $get('winner_id');
 
-                        return Team::whereIn('id', [$teamAId,$teamBId])
-                        ->pluck('name','id');
-                    })
-                    ->label('Győztes Csapat'),
+                            if ($winnerId == $teamAId) {
+                                $set('team_a_score',10);
+                                if ($get('team_b_score') == 10) {
+                                    $set('team_b_score',null);
+                                }
+                            }elseif ($winnerId == $teamBId) {
+                                $set('team_b_score',10);
+                                if ($get('team_a_score') == 10) {
+                                    $set('team_a_score',null);
+                                }
+                            }
+
+                            return Team::whereIn('id', [$teamAId,$teamBId])
+                            ->pluck('name','id');
+                        })
+                        ->reactive()
+                        ->label('Győztes Csapat'),
                     Select::make('team_a_score')
-                    ->label(function(Get $get){
-                        $teamAId = $get('team_a_id');
-                        return Team::where('id',$teamAId)->pluck('name','id')->first() . " elért pontszáma";
-                    })
-                    ->options(function(Get $get){
-                        $otherScore = $get('team_b_score');
-                        if ($otherScore == 10) {
-                            $scores = Contest::scores();
-                            array_pop($scores);
-                            return $scores;
-                        }
-                        return Contest::scores();
-                    })
-                    ->reactive(),
-                    Select::make('team_b_score')
-                    ->label(function(Get $get){
-                        $teamBId = $get('team_b_id');
-                        return Team::where('id',$teamBId)->pluck('name','id')->first() . " elért pontszáma";
-                    })
-                    ->options(function(Get $get){
-                        $otherScore = $get('team_a_score');
-                        if ($otherScore == 10) {
-                            $scores = Contest::scores();
-                            array_pop($scores);
-                            return $scores;
-                        }
-                        return Contest::scores();
-                    })
-                    ->reactive(),
-                    DateTimePicker::make('played_at')
-                    ->afterStateHydrated(function (DateTimePicker $component, ?string $state) {
-                        
-                        if (!$state) {
-                            $component->state(now()->toDateTimeString());
-                        }})
-                    ->native(false)
-                    ->minDate(function(Get $get){
-                        $champId = $get('championship_id');
-                       return Championship::where('id', $champId)->pluck('date')->first();
-                    })
-                    ->format('Y-m-d H:i')
-                    ->seconds(false)
-                    ->label('Ekkor játszva')
+                        ->required()
+                        ->label(function(Get $get){
+                            $teamAId = $get('team_a_id');
+                            return Team::where('id',$teamAId)->pluck('name','id')->first() . " elért pontszáma";
+                        })
+                        ->options(function(){
+                            return Contest::scores();
+                        })
+                        ->disabled(function(Get $get){
+                            $winnerId = $get('winner_id');
+                            $teamAId = $get('team_a_id');
 
+                            if ($winnerId == $teamAId) {
+                                return true;
+                            }
+                        })
+                        ->dehydrated()
+                        ->reactive(),
+                    Select::make('team_b_score')
+                        ->required()
+                        ->label(function(Get $get){
+                            $teamBId = $get('team_b_id');
+                            return Team::where('id',$teamBId)->pluck('name','id')->first() . " elért pontszáma";
+                        })
+                        ->options(function(){
+                            return Contest::scores();
+                        })
+                        ->disabled(function(Get $get){
+                            $winnerId = $get('winner_id');
+                            $teamBId = $get('team_b_id');
+
+                            if ($winnerId == $teamBId) {
+                                return true;
+                            }
+                        })
+                        ->dehydrated()
+                        ->reactive(),
+                    DateTimePicker::make('played_at')
+                        ->suffixIcon('heroicon-o-clock')
+                        ->required()
+                        ->afterStateHydrated(function (DateTimePicker $component, ?string $state) {
+                            
+                            if (!$state) {
+                                $component->state(now()->toDateTimeString());
+                            }})
+                        ->native(false)
+                        ->minDate(function(Get $get){
+                            $champId = $get('championship_id');
+                        return Championship::where('id', $champId)->pluck('date')->first();
+                        })
+                        ->format('Y-m-d H:i')
+                        ->seconds(false)
+                        ->label('Ekkor játszva')
                 ]),
                    
                
@@ -122,23 +146,23 @@ class ContestResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('championship.name')
-                ->searchable()
-                ->label('Bajnokság név'),
+                    ->searchable()
+                    ->label('Bajnokság név'),
                 TextColumn::make('teamA.name')
-                ->searchable()
-                ->label('A csapat neve'),
+                    ->searchable()
+                    ->label('A csapat neve'),
                 TextColumn::make('teamB.name')
-                ->searchable()
-                ->label('B csapat neve'),
+                    ->searchable()
+                    ->label('B csapat neve'),
                 TextColumn::make('winner.name')
-                ->label('Győztes csapat neve'),
+                    ->label('Győztes csapat neve'),
                 TextColumn::make('team_a_score')
-                ->label('A csapat pontja'),
+                    ->label('A csapat pontja'),
                 TextColumn::make('team_b_score')
-                ->label('B csapat pontja'),
+                    ->label('B csapat pontja'),
                 TextColumn::make('played_at')
-                ->dateTime('Y-m-d H:i')
-                ->label('Játszva ekkor'),
+                    ->dateTime('Y-m-d H:i')
+                    ->label('Játszva ekkor'),
 
             ])
             ->filters([

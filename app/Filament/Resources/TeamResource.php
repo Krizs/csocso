@@ -29,23 +29,23 @@ class TeamResource extends Resource
         return $form
             ->schema([
                 TextInput::make('name')
-                ->required()
-                ->unique(ignorable: fn ($record) => $record)
-                ->label('Csapat neve'),
+                    ->required()
+                    ->unique(ignorable: fn ($record) => $record)
+                    ->label('Csapat neve'),
                 Select::make('attacker_id')
-                ->relationship('attacker','name')
-                ->options(Player::FreePlayers()->where('position','attacker')->pluck('name','id'))
-                ->searchable()
-                ->required()
-                ->preload()
-                ->label('Csatár'),
+                    ->relationship('attacker','name')
+                    ->options(Player::FreePlayers()->where('position','attacker')->pluck('name','id'))
+                    ->searchable()
+                    ->required()
+                    ->preload()
+                    ->label('Csatár'),
                 Select::make('goalkeeper_id')
-                ->relationship('goalkeeper','name')
-                ->options(Player::FreePlayers()->where('position','goalkeeper')->pluck('name','id'))
-                ->searchable()
-                ->required()
-                ->preload()
-                ->label('Kapus'),
+                    ->relationship('goalkeeper','name')
+                    ->options(Player::FreePlayers()->where('position','goalkeeper')->pluck('name','id'))
+                    ->searchable()
+                    ->required()
+                    ->preload()
+                    ->label('Kapus'),
             ]);
     }
 
@@ -54,11 +54,11 @@ class TeamResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('name')
-                ->label('Csapat név'),
+                    ->label('Csapat név'),
                 TextColumn::make('goalkeeper.name')
-                ->label('Kapus név'),
+                    ->label('Kapus név'),
                 TextColumn::make('attacker.name')
-                ->label('Csatár név'),
+                    ->label('Csatár név'),
             ])
             ->filters([
                 //

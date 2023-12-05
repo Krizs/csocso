@@ -16,7 +16,8 @@ class ScoreBoard extends BaseWidget
     protected function getStats(): array
     {
         return [
-            Stat::make('Eredménytábla',Team::getScoreBoard($this->record->id))
+            Stat::make('Eredménytábla',Team::getScoreBoard($this->record->id)),
+            Stat::make('Mászó tábla',Team::getNullScoreBoard($this->record->id))
         ];
     }
 }

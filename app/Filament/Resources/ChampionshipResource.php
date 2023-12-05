@@ -30,25 +30,25 @@ class ChampionshipResource extends Resource
         return $form
             ->schema([
                 TextInput::make('name')
-                ->required()
-                ->unique(ignorable: fn ($record) => $record)
-                ->label('Bajnokság neve'),
+                    ->required()
+                    ->unique(ignorable: fn ($record) => $record)
+                    ->label('Bajnokság neve'),
                 DateTimePicker::make('date')
-                ->native(false)
-                ->required()
-                ->prefixIcon('heroicon-o-bolt')
-                ->prefixIconColor('success')
-                ->minutesStep(15)
-                ->seconds(false)
-                ->minDate(Carbon::now()->format('Y-m-d H:i'))
-                ->label('Verseny Kezdete'),
+                    ->native(false)
+                    ->required()
+                    ->prefixIcon('heroicon-o-clock')
+                    ->prefixIconColor('success')
+                    ->minutesStep(15)
+                    ->seconds(false)
+                    ->minDate(Carbon::now()->format('Y-m-d H:i'))
+                    ->label('Verseny Kezdete'),
                 Select::make('teams')
-                ->disabledOn('edit') 
-                ->required()
-                ->minItems(2)
-                ->relationship('teams','name')
-                ->options(Team::all()->pluck('name','id'))
-                ->multiple()
+                    ->disabledOn('edit') 
+                    ->required()
+                    ->minItems(2)
+                    ->relationship('teams','name')
+                    ->options(Team::all()->pluck('name','id'))
+                    ->multiple()
             ]);
     }
 
@@ -57,12 +57,12 @@ class ChampionshipResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('name')
-                ->label('Bajnokság neve'),
+                    ->label('Bajnokság neve'),
                 TextColumn::make('date')
-                ->label('Vereseny kezdete')
-                ->dateTime('Y-m-d H:i'),
+                    ->label('Vereseny kezdete')
+                    ->dateTime('Y-m-d H:i'),
                 TextColumn::make('teams.name')
-                ->label('Csapatok')
+                    ->label('Csapatok')
                 
             
 
