@@ -14,7 +14,7 @@ class nullScoreBoard extends BaseWidget
     protected function getStats(): array
     {
         return [
-            Stat::make('Mászás tábla',Team::getNullScoreBoard($this->record->id))
+            Stat::make('Mászó tábla',Team::getNullScoreBoard($this->record->id))
         ];
     }
 }

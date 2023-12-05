@@ -50,8 +50,18 @@ class Team extends Model
             $wins[$team->name] = $teamWins;
         }
 
-
+        //TODO: add point if equal wins
+        
         arsort($wins);
+
+        // if (count(array_unique($wins)) !== 1) {
+        //     $winsCopy = $wins;
+        //     $lastTwoScores = array_slice($winsCopy, -2);
+        //     dd($lastTwoScores);
+        //     if ($lastTwoScores[0] === $lastTwoScores[1]) {
+                
+        //     }
+        // }
 
         $string = '';
         foreach ($wins as $key => $value) {
